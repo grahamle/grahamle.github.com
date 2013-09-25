@@ -1,6 +1,6 @@
 markdown: rdiscount
 permalink: /:year/:month/:title/
-url: http://geeklu.com
-author: 卢克
+url: http://grahamle.github.io
+author: 左银右煌
 pygments: true
 paginate: 24
