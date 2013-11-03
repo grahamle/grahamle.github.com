@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 使用AngularJS开发web app [译书]
+title: 使用AngularJS开发web-app [译书]
 categories:
 - programming
 tag:
@@ -27,5 +27,4 @@ tag:
 - 安装node.js及其包管理工具npm
 - Grunt + Karma
 - 后端是跑在MongoDB上的（需要网络）
-
 
