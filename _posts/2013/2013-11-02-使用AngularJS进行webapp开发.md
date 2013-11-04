@@ -61,7 +61,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 ## angular的hello-world
 要是真像标题所说的有crash course这样逆天的存在，真的就不用学了，angular的学习曲线很陡，这是个人经验。
 
-**通过hello-world例子学习angular基础组成部分**：
+### **通过hello-world例子学习angular基础组成部分**：
 
 首先直接看以下hello-world的代码：
 
@@ -84,11 +84,11 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 - angular使用自定义HTML标签和属性来为静态的HTML页添加动态行为
 - 双大括号（\{\{表达式\}\}）被用来让表达式输出数据模型的值
 
-**directives**：
+### **directives**：
 
 从上面的示例我们首先要引出的第一个angular的关键术语：**directives**，它是指所有angular这个框架能够理解并解析的特殊的（非标准的）HTML标签和属性。
 
-**双向绑定**：
+### **双向绑定**：
 
 从示例我们要讲的第二个关键术语就是：**双向数据绑定**。从 `ng-init` 我们可以看到准备好的数据模型是可以通过*双大括号包含表达式*的方式渲染出来值的。如果在此基础上我们引入 `ng-model`的话，那么angular就可以做到：
 
@@ -111,3 +111,63 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 - `<input>` 接收用户的实时输入，实时改变数据模型name
 - name的实时改变直接引起了模版对象\{\{name\}\}的渲染输出结果，并最终影响了 `<h1>` 中的渲染结果
+
+## angular中的MVC模式
+现在市面上的web-app大多数都是基于某种MVC模式或其变式。但是MVC的问题在于它不是一个很精确的模式，相反它是一个相对顶层的设计，属于架构层次的。而基于MVC而衍生的变种也很多，如MVP、MVVM是属于大众人气比较高的。记住一点，**不同的开发团队，他们理解的MVC模式是不尽相同的**。这一点，Martin Fowler在[这篇文章](http://martinfowler.com/eaaDev/uiArchs.html)里进行了总结。
+
+### **麻雀虽小，当应五脏俱全**
+之前hello-world的例子中把数据模型初始化、逻辑和视图混在一个文件中，这是典型的没有展现分层的策略。那如果要把angular团队强调的MVW模式引入进来，那么这个例子要如何重写呢（以后书中所有代码均略去初始化及脚步包含部分）？
+
+	<div ng-controller="HelloCtlr">
+		Say hello to: <input type="text" ng-model="name"><br>
+		<h1>Hello, {{name}}!</h1>
+	</div>
+
+我们移除了 `ng-init` 属性，取而代之的是一个指向了一个js函数的 `ng-controller` 指令，它的代码如下：
+
+	var HelloCtrl = function ($scope) {
+		$scope.name = "World";
+	}
+
+逻辑很简单，就是把原来通过 `ng-init` 准备的数据模型 `name` 现在我们用另外一个指令来完成，这个指令就是 `ng-controller` ，它是通过往 `$scope` 对象中添加属性的方式来准备好我们需要的数据模型。也就是说，现在我们的数据模型都存放到了 `$scope` 对象之中了，那么这个对象又是何方神圣呢？
+
+### **$scope对象基础**
+关于 `$scope` 对象的几点：
+
+- `$scope` 对象负责把*数据模型对象(集)*暴露给模版对象/视图对象
+- 为 `$scope` 对象增加属性可以是数据，也可以是函数操作，但是它们都是有具体的视图对象范围的，也就是说我们可以通过一个 `$scope` 对象实例将具体的UI操作逻辑暴露给模版对象
+- `$scope` 对象允许我们可以精确地控制整个对象的哪些部分是可以从视图/模版中获取到的（如以下的getName）
+
+上面的 `HelloCtrl` 可以新增加一个 `getter` 函数用来取name值，这样就可以把name值当作私有属性而不直接暴露在视图对象中了，代码如下：
+
+	var HelloCtrl = function ($scope) {
+		$scope.name = "World";
+		$scope.getName = function() {
+			return $scope.name;
+		}
+	}
+
+然后就可以在模版中使用这个getter了：
+
+	<h1>Hello, {{getName()}}!</h1>
+
+### **controller**
+上面我们讲是通过 `ng-controller` 替代了 `ng-init` 来进行数据模型的准备，而这就是angular中的又一重要组成部分：**controller**，也就是控制器。它的首要任务就是初始化 `$scope` 对象，进而为储存数据模型对象集做准备。而这个初始化过程又主要包括这两个任务：
+
+1. 提供初始化数据模型值
+2. 用具体的UI操作逻辑（即函数）来扩展 `$scope` 对象
+
+controller（控制器），说到底其实就是普通的js函数。它的运转是无需扩展特定的框架类或是调用angular的APIs。另外，就如我前面所说，`ng-controller` 无非就是用js的方式来表达了 `ng-init` 这样一个过程，而且避免了将初始化逻辑（这里是数据模型）与HTML模版混杂。
+
+### **model**
+Model（模型）就是普通的js对象。通过上一节中介绍的controller初始化的两个任务，其实可以看到，它们就是MVC架构中的Model（模型）的两个重要部分：
+
+- 数据模型（私有数据）
+- UI操作逻辑（公有函数）
+
+最后Model通过暴露自己的UI操作逻辑来实现封装数据，使用安全。
+
+而Model，说白了，就是被当作属性添加到 `$scope`对象上的，这样就能暴露给模版对象了。
+
+### **$scope对象进阶**
+通过以上各小节从：`$scope` 对象基础 --> controller --> model 这样的流程，我们可以来更深地学习一下这个对象。首先我们必须明确一点：** `$scope` 对象是 `Scope` 类的一个实例**。而 `Scope` 类拥有诸多方法如控制着它的实例的生命周期，提供事件传播机制，以及支持模版渲染进程。
