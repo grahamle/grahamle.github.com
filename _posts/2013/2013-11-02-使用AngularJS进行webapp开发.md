@@ -28,7 +28,7 @@ tag:
 - Grunt + Karma
 - 后端是跑在MongoDB上的（需要网络）
 
-## Ch.1 AngularJS之道
+# Ch.1 AngularJS之道
 
 前面是一堆废话说angular（以下用angular代称angularJS）将来会很好，blabla，此处省略几百字。接下来讲下这章的内容：
 
@@ -37,7 +37,7 @@ tag:
 - angular的依赖注入
 - angular和别的框架或库（尤其是jQuery）的差别
 
-### **angular框架概览**
+## angular框架概览
 angular特殊在于它的模版系统（templating system）：
 
 - 用HTML作为模版语言
@@ -46,7 +46,7 @@ angular特殊在于它的模版系统（templating system）：
 
 angular别的隐藏大招如：DI（依赖注入）、测试
 
-### **angular大杂烩**
+## angular大杂烩
 主要就是讲一些这个项目的起源，以及在github上开源，还有Google+以及别的社区上（如StackOverflow）可以获得的帮助。此处不翻。
 
 很多东西你都可以在[angular官网](http://www.angularjs.org)上找到，虽然我觉得里面的文档写得很shi。另外推荐一个国内的关于angular资料整理的很好的链接：[AngularJS资源大集锦](http://www.csdn.net/article/2013-10-31/2817356-Resources-to-Get-You-Up-to-Speed-in-AngularJS)。
@@ -58,7 +58,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 - 传统工具：IDE如webstorm, sublime text
 - angular团队贡献的：Batarang, Plunker, jsFiddle
 
-### **angular的hello-world**
+## angular的hello-world
 要是真像标题所说的有crash course这样逆天的存在，真的就不用学了，angular的学习曲线很陡，这是个人经验。
 
 **通过hello-world例子学习angular基础组成部分**：
@@ -77,12 +77,12 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 1. 在项目页中引入angular库：1）通过google的CDN；2）也可以下载下来
 2. 引用了库之后，就是在你的应用里如何启用angular了，通过：`ng-app` 这个HTML属性
 3. 在body标签中还有一个非标准的HTML属性：`ng-init` ，这个属性可以让你在模版被渲染之前准备好数据模型
-4. 最后需要介绍的是 `{{name}}` 这个表达式，它做的工作很直接，直接将 `ng-init` 准备好的数据模型里的值渲染输出
+4. 最后需要介绍的是 \{\{name\}\} 这个表达式，它做的工作很直接，直接将 `ng-init` 准备好的数据模型里的值渲染输出
 
 从以上的示例我们可以看出，**angular模版系统的两个特点**：
 
 - angular使用自定义HTML标签和属性来为静态的HTML页添加动态行为
-- 双大括号（{{表达式}}）被用来让表达式输出数据模型的值
+- 双大括号（\{\{表达式\}\}）被用来让表达式输出数据模型的值
 
 **directives**：
 
@@ -105,9 +105,9 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 其实从上述代码不难发现，所谓的双向绑定，实质上涉及的是两种对象，三个实例：
 
 - 数据模型对象（一个实例）：`name`
-- 模版对象/视图对象（两个实例）：一个是 `<input>` （视图对象），另一个是 `{{name}}` （模版对象）；而模版对象其实是可以看作是视图对象的一部分，只不过它特殊一些，会动态变化，因为模版是和数据模型绑定的
+- 模版对象/视图对象（两个实例）：一个是 `<input>` （视图对象），另一个是 \{\{name\}\} （模版对象）；而模版对象其实是可以看作是视图对象的一部分，只不过它特殊一些，会动态变化，因为模版是和数据模型绑定的
 
 所以上述的数据绑定过程其实很简单，发生在三个对象实例之间，**关键是全部都是实时的**，大概是这样：
 
-- <input>接收用户的实时输入，实时改变数据模型name
-- name的实时改变直接引起了模版对象{{namel}}的渲染输出结果，并最终影响了<h1>中的渲染结果
+- `<input>` 接收用户的实时输入，实时改变数据模型name
+- name的实时改变直接引起了模版对象\{\{name\}\}的渲染输出结果，并最终影响了 `<h1>` 中的渲染结果
