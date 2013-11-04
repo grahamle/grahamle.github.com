@@ -70,7 +70,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
 	</head>
 	<body ng-app ng-init="name = 'world'">
-		<h1>Hello, \{\{name\}\}!</h1>
+		<h1>Hello, \{{name\}}!</h1>
 	</body>
 	</html>
 
@@ -99,7 +99,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 	<body ng-app ng-init="name = 'World'">
 		Say hello to: <input type="text" ng-model="name">
-		<h1>Hello, \{\{name\}\}!</h1>
+		<h1>Hello, \{{name\}}!</h1>
 	</body>
 
 其实从上述代码不难发现，所谓的双向绑定，实质上涉及的是两种对象，三个实例：
@@ -120,7 +120,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 	<div ng-controller="HelloCtlr">
 		Say hello to: <input type="text" ng-model="name"><br>
-		<h1>Hello, \{\{name\}\}!</h1>
+		<h1>Hello, \{{name\}}!</h1>
 	</div>
 
 我们移除了 `ng-init` 属性，取而代之的是一个指向了一个js函数的 `ng-controller` 指令，它的代码如下：
@@ -149,7 +149,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 然后就可以在模版中使用这个getter了：
 
-	<h1>Hello, \{\{getName()\}\}!</h1>
+	<h1>Hello, \{{getName()\}}!</h1>
 
 ### **controller**
 上面我们讲是通过 `ng-controller` 替代了 `ng-init` 来进行数据模型的准备，而这就是angular中的又一重要组成部分：**controller**，也就是控制器。它的首要任务就是初始化 `$scope` 对象，进而为储存数据模型对象集做准备。而这个初始化过程又主要包括这两个任务：
@@ -198,10 +198,10 @@ Model（模型）就是普通的js对象。通过上一节中介绍的controller
 	// the markup fragment
 	<ul ng-controller="WorldCtrl">
 		<li ng-repeat="country in countries">
-			\{\{country.name\}\} has a population of \{\{country.population\}\}
+			\{{country.name\}} has a population of \{{country.population\}}
 		</li>
 		<hr>
-		World's population: \{\{population\}\} millions
+		World's population: \{{population\}} millions
 	</ul>
 
 `ng-repeat` 创建了两个新的scope，在视图中，也就对应着两个新的`<li>`，在Chrome中你可以通过Batarang插件看的一清二楚。`ng-repeat` 中指定的新的变量 `country` 成为了新的两个子级scope中的数据。这时候你会看到两个 `<li>` 它们对应的scope中有重名函数，但这不会导致命名冲突，因为**每个 `<li>` 拥有它自己的scope也就有它自己的命名空间。
@@ -225,11 +225,11 @@ Model（模型）就是普通的js对象。通过上一节中介绍的controller
 	// the markup fragment
 	<ul ng-controller="WorldCtrl">
 		<li ng-repeat="country in countries">
-			\{\{country.name\}\} has a population of \{\{country.population\}\},
-			\{\{worldsPercentage(country.population)\}\} % of the World's population
+			\{{country.name\}} has a population of \{{country.population\}},
+			\{{worldsPercentage(country.population)\}} % of the World's population
 		</li>
 		<hr>
-		World's population: \{\{population\}\} millions
+		World's population: \{{population\}} millions
 	</ul>
 
 总结来讲，angular中的scope的继承遵循js的原型继承的相关规则（也就是说当我们试着读取一个属性时，原型链机制启用，一层层往上直到这个属性找到）。
@@ -240,10 +240,10 @@ scopes的继承机制在**读属性**这个操作时没有问题简单易懂，�
 
 	// the markup fragment
 	<body ng-app  ng-init="name='World'">
-	<h1>Hello, \{\{name\}\} </h1>
+	<h1>Hello, \{{name\}} </h1>
 	<div ng-controller="HelloCtrl">
     	Say hello to: <input type="text" ng-model="name">
-    	<h2>Hello, \{\{name\}\!</h2>
+    	<h2>Hello, \{{name\}}!</h2>
 	</div>
 
 	// the controller
@@ -265,8 +265,34 @@ scopes的继承机制在**读属性**这个操作时没有问题简单易懂，�
 	<h1>Hello, {{thing.name}}</h1>
 	<div ng-controller="HelloCtrl">
     	Say hello to: <input type="text" ng-model="thing.name">
-    	<h2>Hello, {{thing.name}}!</h2>
+    	<h2>Hello, \{{thing.name\}}!</h2>
 	</div>
 	</body>
 
 以上原则是angular提倡的，即：*避免直接绑定到scope的属性，多加一层，绑定到**scope的属性的属性**是更好的方法*。
+
+### **scopes领衔的事件系统**
+scopes的组织架构（层次）图可以当作一辆bus来运载angular中的事件，那么也就有了事件bus。angular允许我们远着scope的层次传递自定义姓名的事件，可以往上（`$emit`），也可以往下（`$broadcast`）。
+
+angular中的两大组成部分 `services` 和 `directives` 就是利用这个事件bus在应用中发送全局状态改变的消息。比如，我们可以监听从 `$rootScope` 广播出的 `$locationChangeSuccess` 事件，这样就可以知道URL是否改变，好做出相应的策略。
+
+	$scope.$on("$locationChangeSuccess", function(event, newUrl, oldUrl) {
+		// react on the location change here
+		// for example, update breadcrumbs based on the newUrl
+	})
+
+关于事件的几个注意点：
+
+- `$on` 方法是每个scope实例对象都可以调用的，并且为其注册一个事件处理器。这个事件处理器可以有三个参数，第一个是发起的事件，第二个和第三个是视具体的事件发出的消息而定
+- 可以通过 `$emit` 或 `$broadcast` 发出事件
+- 与传统的DOM事件一样，也可以使用 `preventDefault()` 和 `stopPropagation()` 方法作用于事件对象上。`stopPropagation()` 能阻止事件沿着scope层向上冒泡，但是它只对那些通过 `$emit` 发起的事件有效
+- 除了以上两个函数一样，angular的事件机制和DOM事件机制完全是两个独立的个体，没有交集
+- 在你确定想要使用自定义事件时，一定要斟酌再三，因为在angular里常常通过双向数据绑定就可以解决问题了
+- angular中的内置事件：
+	+ $emit: $includeContentRequested, $includeContentLoaded,  $viewContentLoaded
+	+ `$broadcast`: $locationChangeStart,  $locationChangeSuccess,  $routeUpdate, $routeChangeStart,  $routeChangeSuccess,  $routeChangeError,  $destroy
+
+### **scopes的生命周期**
+scopes是用来提供独立的命名空间和避免变量名冲突的。scopes是有生命周期的，当其不再被需要时，可以被摧毁，这样通过scopes暴露的数据模型和UI操作逻辑也就可以被回收。
+
+正如 `directives` 那一节所讲的，scopes通常是经过可以创建scope的指令进行创建，当然摧毁也一样。你也可以通过 `Scope.$new()` 和 `Scope.$destroy()` 这两个方法人工进行scopes的创建和摧毁。
