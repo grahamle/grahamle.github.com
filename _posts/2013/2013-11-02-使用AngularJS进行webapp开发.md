@@ -70,7 +70,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
 	</head>
 	<body ng-app ng-init="name = 'world'">
-		<h1>Hello, {{name}}!</h1>
+		<h1>Hello, \{\{name\}\}!</h1>
 	</body>
 	</html>
 
@@ -92,14 +92,14 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 从示例我们要讲的第二个关键术语就是：**双向数据绑定**。从 `ng-init` 我们可以看到准备好的数据模型是可以通过*双大括号包含表达式*的方式渲染出来值的。如果在此基础上我们引入 `ng-model`的话，那么angular就可以做到：
 
-1） 实时检测到数据模型的变化，而在下面这个例子中的数据模型的变化又恰恰是由视图的变化引起的；
-2） 根据数据模型值的变化对模版（也就是DOM）进行实时更新。
+1. 实时检测到数据模型的变化，而在下面这个例子中的数据模型的变化又恰恰是由视图的变化引起的；
+2. 根据数据模型值的变化对模版（也就是DOM）进行实时更新。
 
 也就是说，**angular为我们省去了那些多余的为了让模版进行更新而所需的DOM操作**。代码如下：
 
 	<body ng-app ng-init="name = 'World'">
 		Say hello to: <input type="text" ng-model="name">
-		<h1>Hello, {{name}}!</h1>
+		<h1>Hello, \{\{name\}\}!</h1>
 	</body>
 
 其实从上述代码不难发现，所谓的双向绑定，实质上涉及的是两种对象，三个实例：
@@ -120,7 +120,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 	<div ng-controller="HelloCtlr">
 		Say hello to: <input type="text" ng-model="name"><br>
-		<h1>Hello, {{name}}!</h1>
+		<h1>Hello, \{\{name\}\}!</h1>
 	</div>
 
 我们移除了 `ng-init` 属性，取而代之的是一个指向了一个js函数的 `ng-controller` 指令，它的代码如下：
@@ -149,7 +149,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 然后就可以在模版中使用这个getter了：
 
-	<h1>Hello, {{getName()}}!</h1>
+	<h1>Hello, \{\{getName()\}\}!</h1>
 
 ### **controller**
 上面我们讲是通过 `ng-controller` 替代了 `ng-init` 来进行数据模型的准备，而这就是angular中的又一重要组成部分：**controller**，也就是控制器。它的首要任务就是初始化 `$scope` 对象，进而为储存数据模型对象集做准备。而这个初始化过程又主要包括这两个任务：
@@ -171,3 +171,102 @@ Model（模型）就是普通的js对象。通过上一节中介绍的controller
 
 ### **$scope对象进阶**
 通过以上各小节从：`$scope` 对象基础 --> controller --> model 这样的流程，我们可以来更深地学习一下这个对象。首先我们必须明确一点：** `$scope` 对象是 `Scope` 类的一个实例**。而 `Scope` 类拥有诸多方法如控制着它的实例的生命周期，提供事件传播机制，以及支持模版渲染进程。
+
+*scopes的层次*
+
+重新看一遍 `HelloCtrl` 的代码，与普通js的构造函数没有什么区别，只有唯一的一个值得注意的地方就是函数参数 `$scope`，那么这个参数是哪里来的呢？这就牵扯到 `$scope` 对象的生命周期了：
+
+- 首先一个新的scope可以通过 `ng-controller` 指令通过调用 `Scope.$new()` 函数来创建的
+- 能够调用上述方法的前提是我们拥有一个scope的实例，angular中有：`$rootScope`，这个对象是整个应用其他 `scopes` 的父亲，它在应用启动时被创建
+- scopes形成了一个以 `$rootScope` 为根节点父子节点组成的树状图，这和DOM树是一致的，也就是说scopes中的各个scope是在对应着DOM结构
+
+*能够创建scopes的指令*
+
+`ng-controller` 是其中一个可以可以创建scope的指令，其他还有很多类似的创建scope的指令。angular在扫描DOM树时每遇到一个这样可以创建scope的指令的时候，都会创建一个 `Scope` 的实例。新创建的scope都有一个 `$parent` 属性指向它们的父级scope。
+
+现在来看另一个能够创建子级scope的指令：`ng-repeat`
+
+	// the controller
+	var WorldCtrl = function ($scope) {
+		$scope.population = 7000;
+		$scope.countries = [
+			{name: 'France', population: 63.1},
+			{name: 'United Kingdom', population: 61.8}
+		];
+	};
+
+	// the markup fragment
+	<ul ng-controller="WorldCtrl">
+		<li ng-repeat="country in countries">
+			\{\{country.name\}\} has a population of \{\{country.population\}\}
+		</li>
+		<hr>
+		World's population: \{\{population\}\} millions
+	</ul>
+
+`ng-repeat` 创建了两个新的scope，在视图中，也就对应着两个新的`<li>`，在Chrome中你可以通过Batarang插件看的一清二楚。`ng-repeat` 中指定的新的变量 `country` 成为了新的两个子级scope中的数据。这时候你会看到两个 `<li>` 它们对应的scope中有重名函数，但这不会导致命名冲突，因为**每个 `<li>` 拥有它自己的scope也就有它自己的命名空间。
+
+*scopes的继承*
+
+定义在高层scope中的属性是可以被其子级scopes继承，因为angular规定：子级scope不重新定义父级scope中已有的属性。以上面的国家人口例子为开始，现在我们想要显示各个国家占全球总人口的百分比，那么在父级scope（也就是`ng-controller`创建的scope，对应模版中的`<ul>`）定义一个计算百分比的逻辑，那么在两个`<li>`中均可以调用到该函数（可以理解为继承了），而不用分别在两个`<li>`中做冗余的函数定义了，代码如下：
+
+	// the controller
+	var WorldCtrl = function ($scope) {
+		$scope.population = 7000;
+		$scope.countries = [
+			{name: 'France', population: 63.1},
+			{name: 'United Kingdom', population: 61.8}
+		];
+		$scope.worldsPercentage = function (countryPopulation) {
+			return (countryPopulation / $scope.population) * 100;
+		}
+	};
+
+	// the markup fragment
+	<ul ng-controller="WorldCtrl">
+		<li ng-repeat="country in countries">
+			\{\{country.name\}\} has a population of \{\{country.population\}\},
+			\{\{worldsPercentage(country.population)\}\} % of the World's population
+		</li>
+		<hr>
+		World's population: \{\{population\}\} millions
+	</ul>
+
+总结来讲，angular中的scope的继承遵循js的原型继承的相关规则（也就是说当我们试着读取一个属性时，原型链机制启用，一层层往上直到这个属性找到）。
+
+*scopes继承的潜在危险*
+
+scopes的继承机制在**读属性**这个操作时没有问题简单易懂，而在**写属性**时，事情就变得十分复杂。还是拿hello-world的那个例子来看：
+
+	// the markup fragment
+	<body ng-app  ng-init="name='World'">
+	<h1>Hello, \{\{name\}\} </h1>
+	<div ng-controller="HelloCtrl">
+    	Say hello to: <input type="text" ng-model="name">
+    	<h2>Hello, \{\{name\}\!</h2>
+	</div>
+
+	// the controller
+	var HelloCtrl = function ($scope) {
+
+	};
+
+运行如上代码首次加载时，都是出现 *Hello, World!*，但是在用户通过`<input>`进行输入之后，`<h2>`中的显示改变了，跟随用户输入而变，这是因为 `ng-controller` 创建了子级的scope，虽然 `HelloCtrl` 什么初始化也没有做。
+
+上面的例子中，用户输入通过 `ng-model` 进行了scope上面的name属性的**重写**，但是幸运的是，只影响到了我们事先想要影响的模版/视图区域。那这里有没有可能影响到 `<h1>`中的模版对象呢？答案是有的。如下，将 `ng-model`的引用指向父级scope中的name属性即可：
+
+	<input type="text" ng-model="$parent.name">
+
+虽然通过上面的方法，视图中三个使用了\{\{name\}\}模版的区域都得到了同步的更新，但是这个解决方案毕竟是脆弱的。因为通过 `ng-model` 这样的方法是建立在对于全局的DOM结构的假设的基础上的，如果在`<input>`上动态地添加了一个新的DOM节点，那么上面的 `$parent` 就会指向这个动态添加的（之前未曾料想到的）的节点，那么就会出现意料之外的效果。所以，**尽量减少使用 `$parent` 是王道呀。
+
+那么既然上面的方法行不通，有没有什么别的方法可行呢？答案还是：有的。那就是让 `ng-model` 绑定到的变量是一个对象的属性，也就是说之前绑定的变量name是直接裸露在 `$scope` 的第一层，也就是 `$scope.name` ，那么这时候我们通过把 name存成**对象的属性**的形式，这样就可以大大提高安全性，而且达到目标效果。
+
+	<body ng-app ng-init="thing = {name : 'World'}">
+	<h1>Hello, {{thing.name}}</h1>
+	<div ng-controller="HelloCtrl">
+    	Say hello to: <input type="text" ng-model="thing.name">
+    	<h2>Hello, {{thing.name}}!</h2>
+	</div>
+	</body>
+
+以上原则是angular提倡的，即：*避免直接绑定到scope的属性，多加一层，绑定到**scope的属性的属性**是更好的方法*。
