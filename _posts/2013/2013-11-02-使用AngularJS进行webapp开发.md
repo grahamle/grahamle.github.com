@@ -296,3 +296,67 @@ angular中的两大组成部分 `services` 和 `directives` 就是利用这个�
 scopes是用来提供独立的命名空间和避免变量名冲突的。scopes是有生命周期的，当其不再被需要时，可以被摧毁，这样通过scopes暴露的数据模型和UI操作逻辑也就可以被回收。
 
 正如 `directives` 那一节所讲的，scopes通常是经过可以创建scope的指令进行创建，当然摧毁也一样。你也可以通过 `Scope.$new()` 和 `Scope.$destroy()` 这两个方法人工进行scopes的创建和摧毁。
+
+### **View**
+前面讲述了MVC模式中的Controller和Model，而且重点介绍了angular中用来暴露Model的 `$scope` 对象。接下来讲讲View，也就是视图对象。angular视图有如下几个特点：
+
+- angular中的模版语言是HTML（视图可以看作是各种模版拼接起来的一个大模版）
+- angular中的HTML语法是允许扩展的
+- angular中的模版是允许局部更新的，而且这种局部更新完全是数据模型驱动的自动更新，无须手动干预
+- angular应用的视图渲染过程分三步：
+	+ 浏览器解析各个模版块中的文本及标准的HTML标签，生成DOM树
+	+ DOM树生成后angular杀进来遍历这个已经被解析好的DOM结构
+	+ 每当angular遇到一个directive，它就执行这个directive（指令）的逻辑将其动态地渲染成视图的一部分输出到屏幕
+
+*声明式模版*
+
+angular提倡声明式的方法来进行UI的构建。它意味着在实践中模版把焦点放在**叙述出**一个UI效果而非去关注如何实现这个效果上。也就是说，模版重点体现想要达到的视图效果，而背后实现的逻辑则是交给controller去完成。
+
+书上的一个例子，罗里吧嗦一堆，其实就是个微博输入框的例子，字数限制，到最后几个字给提示，超过字数不给发送的一个 `<textarea>` 的表单。先看下第一个版本的实现代码：
+
+	// the markup fragment
+	<div><span>Remaining: {\{remaining()}\}</span></div>
+	<div class="container" ng-controller="TextAreaWithLimitCtrl">
+		<div class="row">
+			<textarea ng-model="message">{\{message}\}</textarea>
+		</div>
+		<div class="row">
+			<button ng-click="send()">Send</button>
+			<button ng-click="clear()">Clear</button>
+		</div>
+	</div>
+
+	// the controller
+	var TextAreaWithLimitCtrl = function ($scope) {
+		$scope.message = "";
+		$scope.remaining = function () {
+			return MAX_LEN - $scope.message.length;
+		}
+		$scope.hasValidLength = function() {
+			if ($scope.message.length <= MAX_LEN)
+				return true;
+		}
+	}
+
+基本版本完成，记住：`ng-model` 不能完成数据准备，它赋值的右端的那个变量也需要通过在 `ng-init` 或者controller里面准备好。接下来是要将发送按钮失活，代码如下：
+
+	<button ng-disabled="!hasValidLength()" ng-click="send()">Send</button>
+
+通过以上代码中 `remaining()` 和 `hasValidLength()` 的使用我们可以看出，要去进行UI操作，我们只需要去动模版中的一小部分，直接通过指令去描述一个想要的效果，这也就更加证实了angular的模版更关注描述效果，而把关注效果实现的部分丢到后面去解决。虽然我们在HTML标签中嵌入了代码，但是这个代码和js代码的耦合是隐式的，是通过注册在scope下的数据模型进行连接的，但是在实际的js代码维护中，我们完全不用去自己建立指向DOM元素的引用以及直接操作DOM，这样就在js代码中省去了很多麻烦。**以上两个方法的状态变化，都源自数据模型 `message` 的值的变化，进而影响UI中的效果**。接下来的一个数字倒数的显示效果的操作也是一样（代码在第一版本基础上进行修改）：
+
+	<div><span ng-class="{'text-warning' : shouldWarn()}">Remaining: {\{remaining()}\}</span></div>
+
+	// code should be added to TextAreaWithLimitCtrl
+	$scope.shouldWarn = function () {
+		return $scope.remaining() < WARN_THRESHOLD;
+	}
+
+`ng-class` 是能够直接改变css类选择器的，那么上面的代码直接可以看出：
+
+ `message` 影响 `remaining()` 影响 `shouldWarn()` 影响 `ng-class` 最终影响 `UI效果`
+
+ 在上述过程中，这个 `<span>` 新添加了css类 `text-warning` 以至于UI重绘，但是整个过程在 `TextAreaWithLimitCtrl` 的js代码中完全没有见到DOM操作。如果用户或是代码协作者看这个模版和controller的话，完全就可以理解为：“哇操，太牛B了，在HTML中说了一声‘我想要得到警告提示’，然后UI就重新绘制了，而且js代码中完全没有对DOM元素的操作，擦嘞，angular太牛了，直接把这部分工作给我做了”。
+
+ *场景比较*
+
+ 
