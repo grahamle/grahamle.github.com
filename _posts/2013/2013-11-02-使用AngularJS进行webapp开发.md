@@ -70,7 +70,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
 	</head>
 	<body ng-app ng-init="name = 'world'">
-		<h1>Hello, \{{name\}}!</h1>
+		<h1>Hello, { {name} }!</h1>
 	</body>
 	</html>
 
@@ -99,7 +99,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 	<body ng-app ng-init="name = 'World'">
 		Say hello to: <input type="text" ng-model="name">
-		<h1>Hello, \{{name\}}!</h1>
+		<h1>Hello, { {name} }!</h1>
 	</body>
 
 其实从上述代码不难发现，所谓的双向绑定，实质上涉及的是两种对象，三个实例：
@@ -120,7 +120,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 	<div ng-controller="HelloCtlr">
 		Say hello to: <input type="text" ng-model="name"><br>
-		<h1>Hello, \{{name\}}!</h1>
+		<h1>Hello, { {name} }!</h1>
 	</div>
 
 我们移除了 `ng-init` 属性，取而代之的是一个指向了一个js函数的 `ng-controller` 指令，它的代码如下：
@@ -149,7 +149,7 @@ angular别的隐藏大招如：DI（依赖注入）、测试
 
 然后就可以在模版中使用这个getter了：
 
-	<h1>Hello, \{{getName()\}}!</h1>
+	<h1>Hello, { {getName()} }!</h1>
 
 ### **controller**
 上面我们讲是通过 `ng-controller` 替代了 `ng-init` 来进行数据模型的准备，而这就是angular中的又一重要组成部分：**controller**，也就是控制器。它的首要任务就是初始化 `$scope` 对象，进而为储存数据模型对象集做准备。而这个初始化过程又主要包括这两个任务：
@@ -198,10 +198,10 @@ Model（模型）就是普通的js对象。通过上一节中介绍的controller
 	// the markup fragment
 	<ul ng-controller="WorldCtrl">
 		<li ng-repeat="country in countries">
-			\{{country.name\}} has a population of \{{country.population\}}
+			{ {country.name} } has a population of { {country.population} }
 		</li>
 		<hr>
-		World's population: \{{population\}} millions
+		World's population: { {population} } millions
 	</ul>
 
 `ng-repeat` 创建了两个新的scope，在视图中，也就对应着两个新的`<li>`，在Chrome中你可以通过Batarang插件看的一清二楚。`ng-repeat` 中指定的新的变量 `country` 成为了新的两个子级scope中的数据。这时候你会看到两个 `<li>` 它们对应的scope中有重名函数，但这不会导致命名冲突，因为**每个 `<li>` 拥有它自己的scope也就有它自己的命名空间。
@@ -225,11 +225,11 @@ Model（模型）就是普通的js对象。通过上一节中介绍的controller
 	// the markup fragment
 	<ul ng-controller="WorldCtrl">
 		<li ng-repeat="country in countries">
-			\{{country.name\}} has a population of \{{country.population\}},
-			\{{worldsPercentage(country.population)\}} % of the World's population
+			{ {country.name} } has a population of { {country.population} },
+			{ {worldsPercentage(country.population)} } % of the World's population
 		</li>
 		<hr>
-		World's population: \{{population\}} millions
+		World's population: { {population} } millions
 	</ul>
 
 总结来讲，angular中的scope的继承遵循js的原型继承的相关规则（也就是说当我们试着读取一个属性时，原型链机制启用，一层层往上直到这个属性找到）。
@@ -240,10 +240,10 @@ scopes的继承机制在**读属性**这个操作时没有问题简单易懂，�
 
 	// the markup fragment
 	<body ng-app  ng-init="name='World'">
-	<h1>Hello, \{{name\}} </h1>
+	<h1>Hello, { {name} } </h1>
 	<div ng-controller="HelloCtrl">
     	Say hello to: <input type="text" ng-model="name">
-    	<h2>Hello, \{{name\}}!</h2>
+    	<h2>Hello, { {name}} !</h2>
 	</div>
 
 	// the controller
@@ -262,10 +262,10 @@ scopes的继承机制在**读属性**这个操作时没有问题简单易懂，�
 那么既然上面的方法行不通，有没有什么别的方法可行呢？答案还是：有的。那就是让 `ng-model` 绑定到的变量是一个对象的属性，也就是说之前绑定的变量name是直接裸露在 `$scope` 的第一层，也就是 `$scope.name` ，那么这时候我们通过把 name存成**对象的属性**的形式，这样就可以大大提高安全性，而且达到目标效果。
 
 	<body ng-app ng-init="thing = {name : 'World'}">
-	<h1>Hello, {{thing.name}}</h1>
+	<h1>Hello, { {thing.name} }</h1>
 	<div ng-controller="HelloCtrl">
     	Say hello to: <input type="text" ng-model="thing.name">
-    	<h2>Hello, \{{thing.name\}}!</h2>
+    	<h2>Hello, { {thing.name} }!</h2>
 	</div>
 	</body>
 
@@ -315,10 +315,10 @@ angular提倡声明式的方法来进行UI的构建。它意味着在实践中�
 书上的一个例子，罗里吧嗦一堆，其实就是个微博输入框的例子，字数限制，到最后几个字给提示，超过字数不给发送的一个 `<textarea>` 的表单。先看下第一个版本的实现代码：
 
 	// the markup fragment
-	<div><span>Remaining: {\{remaining()}\}</span></div>
+	<div><span>Remaining: { {remaining()} }</span></div>
 	<div class="container" ng-controller="TextAreaWithLimitCtrl">
 		<div class="row">
-			<textarea ng-model="message">{\{message}\}</textarea>
+			<textarea ng-model="message">{ {message} }</textarea>
 		</div>
 		<div class="row">
 			<button ng-click="send()">Send</button>
@@ -359,4 +359,23 @@ angular提倡声明式的方法来进行UI的构建。它意味着在实践中�
 
  *场景比较*
 
- 
+1. 有ng-class：我们是通过它说`text-warning`这个css类需要被加到`<span>`中，这样每次用户输入字符时就会有警告提示
+2. 无ng-class：也就是传统的实现方式，不用angular的情况。我们是这样做的，当用户输入一个字符了，而且总的字符数超出限制了，那好，我想找到那个用来做提示的`<span>`标签，然后给它加上一个css类叫`text-warning`，然后做出相应的显示
+
+可以看到，上述两种场景是用angular（1）和不用angular（2）的区别。显然它们几乎是一个相反的过程。
+
+- 用到angular的场景1相当于自动已经在`<span>`上安装了一个陷阱，等着用户输入触发的事件往里跳，DOM操作都交给angular了，我们只要关注想要什么效果，然后说一声“我们想要有警告提示”，然后就有警告提示了。
+- 而没有用angular的场景2，则是要每次都要去找到那个`<span>`，然后给它加css类，然后改变显示，相当于一心二用，既要关心要加的效果，又要关心效果怎么加上去（即取到那个DOM元素的操作），而后一步，就是多出来的DOM操作的逻辑，在js代码中这样就会显得没有angular来的利索。
+
+如果用专业术语来讲：场景1就是所谓的**declarative approach**，而场景2则是所谓的**imperative approach**。显然，场景1仿佛就只要说一句话，效果就分分钟的事，就好像是在说：*“亲爱的angular先生，当我的数据模型以xxx状态结束时，我想让我的UI看起来像这个样子。所以现在你去给我搞定它，怎么搞/何时搞我可不管。就这么简单。”*
+
+显然，场景1（声明式编程）显得更具语义化且更具表现力，它使程序员可以摆脱去写大量重复的且需要复杂控制的更底层的指令和代码。声明式编程最后的代码非常简洁，而且易读。当然，这就需要有能够正确解析这些更高层的指令（来自声明式）的机制，这里，angular就是这样的机制。
+
+另外，场景2（命令式编程）也有它自己的优点，那就是可以控制全局而且在微调和优化上更容易操作。虽然获得了更高的控制权，但是代价也是巨大的，那就是写一大堆底层的重复的代码。
+
+其实，熟悉SQL的人也知道，它也是一种声明式编程。就是简单声明一个我想要的结果，然后让数据库去搞定给我送回来，就是这么简单。
+
+angular模版中的指令声明式地表达自己想要的效果，这样我们就可以从一步一步地写具体的DOM操作指令中解放出来。而jQuery恰恰相反，它正是那种去一步步进行DOM操作，一个属性一个属性的去修改DOM元素上的属性，最后达到想要的效果。
+
+需要注意的是：angular虽然在模版编程中大力提倡使用声明式的，但是在js代码中，它提倡的命令式编程，这就包括用命令式一步步去完成controller和业务逻辑的代码（但肯定不包括DOM操作）。当然，**唯一的特例**，也就是说在代码中能有DOM操作的就是在directives中。但是无论何时，永远不要在controller中进行DOM操作。当然，我们需要明白和理解angular底层是如何去完成这些我们交给他们的操作的，这样我们能在遇到性能问题的时候，能够给angular更多的提示和解决方案。
+
