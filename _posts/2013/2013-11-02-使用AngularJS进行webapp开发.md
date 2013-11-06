@@ -583,34 +583,34 @@ providers只能在配置阶段进行配置。你可以这么想把，你总不�
 		<td width="200px">运行阶段可注入否</td>
 	</th>
 	<tr>
-		<td>Constant</td>
-		<td>常数值</td>
-		<td>可以</td>
-		<td>可以</td>
+		<td width="200px">Constant</td>
+		<td width="200px">常数值</td>
+		<td width="200px">可以</td>
+		<td width="200px">可以</td>
 	</tr>
 	<tr>
-		<td>Value</td>
-		<td>变量值</td>
-		<td>不能</td>
-		<td>可以</td>
+		<td width="200px">Value</td>
+		<td width="200px">变量值</td>
+		<td width="200px">不能</td>
+		<td width="200px">可以</td>
 	</tr>
 	<tr>
-		<td>Service</td>
-		<td>构造函数创建的新对象</td>
-		<td>不能</td>
-		<td>可以</td>
+		<td width="200px">Service</td>
+		<td width="200px">构造函数创建的新对象</td>
+		<td width="200px">不能</td>
+		<td width="200px">可以</td>
 	</tr>
 	<tr>
-		<td>Factory</td>
-		<td>factory函数返回的新对象</td>
-		<td>不能</td>
-		<td>可以</td>
+		<td width="200px">Factory</td>
+		<td width="200px">factory函数返回的新对象</td>
+		<td width="200px">不能</td>
+		<td width="200px">可以</td>
 	</tr>
 	<tr>
-		<td>Provider</td>
-		<td>$get函数返回的新对象</td>
-		<td>可以</td>
-		<td>不能</td>
+		<td width="200px">Provider</td>
+		<td width="200px">$get函数返回的新对象</td>
+		<td width="200px">可以</td>
+		<td width="200px">不能</td>
 	</tr>
 </table>
 
