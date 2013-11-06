@@ -576,37 +576,37 @@ providers只能在配置阶段进行配置。你可以这么想把，你总不�
 ### **不同的服务注册方法在两阶段中的差异**
 
 <table width="800px">
-	<th>
-		<td width="200px">方法</td>
-		<td width="200px">注册了啥</td>
-		<td width="200px">配置阶段可注入否</td>
-		<td width="200px">运行阶段可注入否</td>
-	</th>
-	<tr>
+	<tr text-align="center">
+		<th width="200px">方法</th>
+		<th width="200px">注册了啥</th>
+		<th width="200px">配置阶段可注入否</th>
+		<th width="200px">运行阶段可注入否</th>
+	</tr>
+	<tr text-align="center">
 		<td width="200px">Constant</td>
 		<td width="200px">常数值</td>
 		<td width="200px">可以</td>
 		<td width="200px">可以</td>
 	</tr>
-	<tr>
+	<tr text-align="center">
 		<td width="200px">Value</td>
 		<td width="200px">变量值</td>
 		<td width="200px">不能</td>
 		<td width="200px">可以</td>
 	</tr>
-	<tr>
+	<tr text-align="center">
 		<td width="200px">Service</td>
 		<td width="200px">构造函数创建的新对象</td>
 		<td width="200px">不能</td>
 		<td width="200px">可以</td>
 	</tr>
-	<tr>
+	<tr text-align="center">
 		<td width="200px">Factory</td>
 		<td width="200px">factory函数返回的新对象</td>
 		<td width="200px">不能</td>
 		<td width="200px">可以</td>
 	</tr>
-	<tr>
+	<tr text-align="center">
 		<td width="200px">Provider</td>
 		<td width="200px">$get函数返回的新对象</td>
 		<td width="200px">可以</td>
@@ -736,3 +736,20 @@ To be added ...
 
 ## 总结
 我其实很讨厌每到一章就要来个总结，技术书你有毛写总结的，多增加一些版面赚取版面费么亲？纸很贵的好吧，以后注意了。咳咳。
+
+# Ch.2 Building and Testing
+这章就点出接下来的所有章节就是围绕要开发一个支持SCRUM敏捷软件开发方法的**项目管理工具**。这个工具的目标是帮助我们进行angular的API及相关术语的展示，以及一些其他内容如与后台交互，导航管理，安全等等。而这一章的主要内容是介绍这个示例app的问题域（problem domain）以及要用到的技术栈（technical stack）。
+
+每个项目开始于初始的几个决定：包括文件组织策略，开发采用什么样的系统（框架），以及基本的工作流。另外，自动化测试对于一个项目的重要性不言而喻。
+
+所以，在这一章里，我们将要学到：
+
+- 示例app所属的问题域及要用到的技术栈
+- 开发angular项目（web-app）要用到的系统以及相关工具及工作流
+- 推荐的文件组织及目录管理方式
+- 自动测试实践（考虑到测试属于未涉及领域，我可能会暂缓这部分的翻译）
+
+## 示例应用介绍
+示例应用在GitHub上的[托管地址](https://github.com/angular-app/angular-app)，可以先抓一份下来看看目录结构。这里顺便说下，个人认为**技术选型**和**文件目录组织**同等级别，技术路线确定后马上要考虑的就是文件目录组织形式了。
+
+### **问题域**
