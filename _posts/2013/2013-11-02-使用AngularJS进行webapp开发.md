@@ -835,9 +835,44 @@ js从之前的玩具似的语言，到现在亦可开发大型的web-app，不�
 接下来就让我们来扒开它的衣服看看里面都有什么。
 
 ### **文件结构**
-在最顶层，整个项目包括两个文件夹：
+在最顶层，如下图所示，整个项目包括两个文件夹还有其他一些附加物：
+
+![顶层结构](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/top-level.png)
 
 - client文件夹：包括所有的客户端angular应用
 - server文件夹：包括一个基本的基于express实现的webserver来支持整个前端
+- README：可以说是标配了，说明这个项目怎么跑的一个说明说
+- LICENSE：说明这个项目的营业执照，你懂的
 
-再往里一层，整个client文件夹包括以下结构：
+再往里一层，如下图所示，整个client文件夹包括以下结构：
+
+！[client结构](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/sec-level.png)
+
+- src文件夹：包括整个app的所有源代码
+- test文件夹：包括整个app中协同的测试代码
+- vendor文件夹：包括所有第三方依赖（这里的依赖和后面的node_modules不同，这里的是js类库的依赖，如angular-ui之类的）
+- build文件夹：包括所有的编译脚本（但是最新版本中已经没有这个文件夹了，目前尚不知整合到哪里了）
+- dist文件夹：包含了整个项目的编译结果（打包结果），可以作为发布版本（这里所说的编译和传统的不同，因为大家知道js是解释性语言，所以这里编译只是借用这个词，强调的是把所有js，css等文件整合压缩等的最后过程，可以理解为打包）
+- gruntFile.js：这个可能就是吸收了原来的build文件夹和原来的grunt.js之后整合的用来做打包操作的命令执行脚本
+- package.js：包含了所有npm（node包依赖管理工具）要安装打包要依赖的工具时的所有工具集
+- node_modules文件夹：包含了`npm install`之后根据`package.js`列的清单安装的所有打包工具依赖集
+
+现在让我们再进一层，进到src文件夹探个究竟：
+
+![src结构]()
+
+- index.html：这个是整个应用程序的入口点了
+- app文件夹和common文件夹：包括与angular相关的代码
+- assets和less文件夹：包括与angular无关的内容；assets主要放图片等资源，而less主要放的是less预处理器用到的变量。需要注意的是，为推特的bootstrap样式而准备的LESS模版是放在了上一层的vendor文件夹（即第三方依赖）下
+
+来来来，让我们打开app文件夹看看：
+
+![app结构]()
+
+接着是common文件夹：
+
+![app结构]()
+
+看完了src下的一层又一层，跟洋葱似的，接着来看看和src同级的test文件夹都有什么好料：
+
+![test结构]()
