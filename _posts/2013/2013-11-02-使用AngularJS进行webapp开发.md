@@ -755,7 +755,7 @@ To be added ...
 ### **问题域**
 利用SCRUM方法去管理项目。当然，我们的这个sample是属于小型的项目，不会说去满足SCRUM的所有方面。以下是我们即将完成的app的屏幕截图：
 
-![app-screen-shot]()
+![app-screen-shot](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/app-screenshot.png)
 
 从上面的截图我们可以看到这个sample-app是一个典型的CRUD的web应用，它包括以下几个功能：
 
@@ -783,9 +783,9 @@ To be added ...
 
 显然，我们的sample-app虽然简单，但是也需要有一个简单粗暴的后台，这里我们用node.js作为我们的后台解决方案。node.js不是我们这本书要讲的内容，我们只需要了解基础的以及关于npm的一些内容即可，因为关键是我们项目中不会直接去用原生的node.js去写一个server，我们会用到相关的node.js的库去搭建我们的服务器端（所谓的后台）的开发环境，典型的`node.js`库有：
 
-- [Express](http://expressjs.com/)作为服务器端web-app框架来提供路由服务、数据服务及静态资源
-- [Passport](http://passportjs.org)作为`node.js`的安全中间件
-- [Restler](https://github.com/danwrong/restler)作为`node.js`的HTTP客户端库
+- [Express](http://expressjs.com/)：作为服务器端web-app框架来提供路由服务、数据服务及静态资源
+- [Passport](http://passportjs.org)：作为`node.js`的安全中间件
+- [Restler](https://github.com/danwrong/restler)：作为`node.js`的HTTP客户端库
 
 这一节其实是为我们开始学习后端提供一个引子，尤其是我自己，所以**重点mark**。
 
@@ -797,3 +797,47 @@ angular完全可以独自使用，但是如果有现成的轮子呀，车轱辘�
 
 用css类库来将我们的UI进行样式化会省去我们裸写一大堆css代码的麻烦，当然，angular并没有强行指定需要使用具体哪个css类库。项目中，我们会使用[Twitter Bootstrap](http://twitter.github.com/bootstrap/)这个类库。同时，我们引进了`LESS`这个css预处理器。
 
+## 开发体系及工作流
+js从之前的玩具似的语言，到现在亦可开发大型的web-app，不断增长的复杂度也就意味着代码量也慢慢增加，那么对于js为主体的文件管理，我们不能再像以前一样，幻想在HTML文件中只包含进一个js文件就可以搞定一切了。这样，我们就需要一个**build system**，怎么样来翻译这个词好呢，我想是用“开发体系”（暂定）。这就包括js和css文件在能够部署到产品服务器之前的一切检测、变换（如压缩）等。以下列举一些需要做到的变换：
+
+- 用`jslint`检测js代码的兼容性
+- 测试工具集的检测
+- 用LESS对css进行预处理
+- 文件的整合及压缩
+- 文档更新
+
+除了以上列出的几条，整个app在能够部署之前，要经历的大小琐事还真是多，所以不得不有一套开发体系来保障这个开发到部署的过程的连续性和有效性，如果能够让这些需要每次都去调来调去的繁琐的任务自动化部署实现，那就thank-god了，幸运的是，这就是“开发体系”要做的事。
+
+### **开发体系原则**
+这一部分得是架构师水平的人才能理解，写出来的，所以这里面就不敢造次，不敢翻，当然，对学习开发也没太大影响，关键是要积累代码量，然后慢慢领悟，现在看几条大原则，我们也不懂如何结合实际，所以不浪费这个时间翻这一段。市面上很多翻书的，也是渣渣，但是特别爱翻这种大道理，大原则性的东西，但是根本实践上让菜鸟们怎么去着手，怎么去apply，无从下手，还是作罢。当然，很多淘宝的牛人翻的动物书还是很犀利的，但也不乏烂货。（ps：我自己现在翻的也很烂，自己将就着先看。）
+
+- Automate everything（废话，谁都想呀，但你倒是告诉我实际点的东西呀，别整些大词汇，没用的）
+- Fail fast, fail clean
+- Different workflows, different commands
+- Build scripts are code too
+
+## 开发工具
+这里选择的开发工具链是OS无关的（operating system agnostic)，你可以在任何主流的OS上跑这个sample-app。虽然我们针对这个sample选择了以下这样的开发工具链，但是对于别的项目，当然可以采用不同的工具。但是这个工具链是推荐的。
+
+- Grunt.js：使用Gruntjs来搭建一个前端项目，然后使用grunt合并，压缩JS文件（具体怎么用还得更深入学习）
+- 测试工具集及类库
+	+ Jasmine
+	+ Karma
+
+关于开发工具就翻这么多吧，具体的只要用关键词`grunt构建前端项目`就一大堆结果了。
+
+## 文件目录组织
+刚刚clone下来了sample-app的项目，配了下MongoDB，分别用npm在client和server端把需要的依赖装上之后，用node把server跑起来，然后localhost可以用MongoDB暴露的用户登录，感觉很开森，虽然还不晓得怎么个过程，但至少知道了我们访问网站时的一个过程和实际上后面的实现过程完全不同：
+
+- 用户表面上看到的过程：从前端到后台，再从后台去DB取数据的过程。
+- 背后实现的过程：先有一个数据库，然后给数据库创建可以访问的用户，然后围绕这个DB进行server端的代码编写，然后跑起server来支持前端。
+
+接下来就让我们来扒开它的衣服看看里面都有什么。
+
+### **文件结构**
+在最顶层，整个项目包括两个文件夹：
+
+- client文件夹：包括所有的客户端angular应用
+- server文件夹：包括一个基本的基于express实现的webserver来支持整个前端
+
+再往里一层，整个client文件夹包括以下结构：
