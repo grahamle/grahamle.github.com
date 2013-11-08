@@ -834,7 +834,7 @@ js从之前的玩具似的语言，到现在亦可开发大型的web-app，不�
 
 接下来就让我们来扒开它的衣服看看里面都有什么。
 
-### **文件结构**
+### **文件目录结构**
 在最顶层，如下图所示，整个项目包括两个文件夹还有其他一些附加物：
 
 ![顶层结构](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/top-level.png)
@@ -846,7 +846,7 @@ js从之前的玩具似的语言，到现在亦可开发大型的web-app，不�
 
 再往里一层，如下图所示，整个client文件夹包括以下结构：
 
-！[client结构](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/sec-level.png)
+![client结构](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/sec-level.png)
 
 - src文件夹：包括整个app的所有源代码
 - test文件夹：包括整个app中协同的测试代码
@@ -859,20 +859,53 @@ js从之前的玩具似的语言，到现在亦可开发大型的web-app，不�
 
 现在让我们再进一层，进到src文件夹探个究竟：
 
-![src结构]()
+![src结构](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/src.png)
 
 - index.html：这个是整个应用程序的入口点了
 - app文件夹和common文件夹：包括与angular相关的代码
 - assets和less文件夹：包括与angular无关的内容；assets主要放图片等资源，而less主要放的是less预处理器用到的变量。需要注意的是，为推特的bootstrap样式而准备的LESS模版是放在了上一层的vendor文件夹（即第三方依赖）下
 
-来来来，让我们打开app文件夹看看：
+src文件夹里面的东西，大部分是脚本和HTML，那么怎么来组织这么多的文件呢，按它们的特点来，还是按结构层次来，还是按文件类型来呢？这里面在src文件夹里的各个文件夹，我们采取混合组织的一种策略，主要先把为了相同/相似功能服务的文件组织到一块，来来来，让我们打开app文件夹看看：
 
-![app结构]()
+![app结构](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/app.png)
 
-接着是common文件夹：
+- admin文件夹：主要负责admin账户的逻辑
+- dashboard文件夹：负责产生的项目管理面板的逻辑
+- projects文件夹：负责项目的所有相关逻辑
+- projectsinfo文件夹：负责项目缩略信息的逻辑
+- app.js：整个项目angular部分的模块划分及路由选择，项目总的js逻辑
+- header.tpl.html：项目header模版
+- notifications.tpl.html：项目通知系统模版
 
-![app结构]()
+接着是common文件夹，主要是存放angular应用的别的通用部件：
 
-看完了src下的一层又一层，跟洋葱似的，接着来看看和src同级的test文件夹都有什么好料：
+![common结构](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/common.png)
 
-![test结构]()
+- directives文件夹：包括所有的指令
+- resources文件夹：目前还不晓得干嘛的，全部是js文件
+- security文件夹：用于登录及认证等机制，与MongoDB有通信
+- services文件夹：用于存放公用服务
+
+至于src文件夹下的另外两个子文件夹：assets和less文件夹，里面就是放图片资源和less变量，就不用细看。这样，看完了src下的一层又一层，跟洋葱似的，接着来看看和src同级的test文件夹都有什么好料：
+
+![test结构](https://raw.github.com/grahamle/grahamle.github.com/master/media/image/angular-ebook/test.png)
+
+- config文件夹：对于配置的测试
+- unit文件夹：做单元测试的
+- vendor文件夹：这个命名个人感觉不好
+
+紧接着是vendor文件夹，这里就不po截图了，简单来看看在开发时（写js代码时）都需要调用哪些第三方的API：
+
+- angular库：包括angular.js和angular-route.js
+- angular-ui库：存放为bootstrap准备的angular-ui
+- bootstrap库：存放LESS模版
+- jquery库：jquery.js
+- mongolab库：存放mongoDB的API
+
+而最后看一下dist文件夹，它是最后用grunt工具编译（打包）之后生成的可以用来发布的版本，也就是说用`node server.js`跑起来后，通过`localhost`访问到的就是最后的这个文件夹里面的`index.html`为入口点的angular-app。
+
+### **罗马非一日之功也**
+上面描述了一个很理想的目录结构，但是非大牛者，不能为也，不可能像本小菜这样的能够一下子就在项目还没开始的时候把目录结构统统给搞好了，然后好吧，你们就往里面填东西得了，不是这样子的，本书作者也阐述了这一观点。**一个项目总是开始于一个很简单的结构的，然后一小步一小步往最后的愿景去靠**。
+
+### **文件命名惯例**
+对于那么多文件夹那么多目录下的那么多文件，文件命名是一个大的挑战，最好在总体上有个一致性，可以试着考虑使用二级后缀。如模版文件可以用`.tpl.html`为结尾。
