@@ -929,40 +929,40 @@ src文件夹里面的东西，大部分是脚本和HTML，那么怎么来组织�
 
 1. 定义一个变量用来作为返回的模块实例的引用，然后用这个变量来注册多个providers（或是controllers等），这其实就是利用一个中间变量来作为引用，但是这个方式的缺点很明显：这个变量是作为全局变量暴露在全局名称空间下的，这样我们就不得不采取一些别的补救策略，例如把整个module声明放到闭包里，单独声明一个命名空间之类的。不管怎么，来看看这种方法的实现，如下：
 	
-	var adminProjects = augular.module("admin-projects", []);
+		var adminProjects = augular.module("admin-projects", []);
 
-	// 第一个controller 
-	adminProjects.controller("ProjectsListCtrl", function($scope) {
-		// controller logic goes here
-	});
-	// 第二个controller
-	adminProjects.controller("ProjectsEditCtrl", function($scope) {
-		// controller logic goes here
-	});
+		// 第一个controller 
+		adminProjects.controller("ProjectsListCtrl", function($scope) {
+			// controller logic goes here
+		});
+		// 第二个controller
+		adminProjects.controller("ProjectsEditCtrl", function($scope) {
+			// controller logic goes here
+		});
 
 2. 理想情况下，我们可以直接把这个中间变量省去，如果你看了下面的代码，其实也没有多少优化，`angular.module("admin-projects")重复出现。代码重复大多数情况下都是不好的，比如，如果某天心血来潮要给module换个名字，尼玛，那你慢慢换吧。而且声明模块和引用模块的代码只差了一个`[]`的依赖包，很容易让人忽略这之间的细微差别导致别的错误。
 
-	augular.module("admin-projects", []);
+		augular.module("admin-projects", []);
 
-	angular.module("admin-projects").controller("ProjectsListCtrl", function($scope) {
-		// controller logic goes here
-	});
+		angular.module("admin-projects").controller("ProjectsListCtrl", function($scope) {
+			// controller logic goes here
+		});
 
-	angular.module("admin-projects").controller("ProjectsEditCtrl", function($scope) {
-		// controller logic goes here
-	});
+		angular.module("admin-projects").controller("ProjectsEditCtrl", function($scope) {
+			// controller logic goes here
+		});
 
 3. 幸运的是，我们有最后一种方法可以解决以上所讲的种种尴尬，**链式调用**，直接看下下面的代码：
 
-	angular.module("admin-projects", [])
-		.controller("ProjectsListCtrl", function($scope) {
-		// controller logic goes here
-		})
-		.controller("ProjectsEditCtrl", function($scope) {
-		// controller logic goes here
-		})
-		.factory()
-		.service();
+		angular.module("admin-projects", [])
+			.controller("ProjectsListCtrl", function($scope) {
+				// controller logic goes here
+			})
+			.controller("ProjectsEditCtrl", function($scope) {
+				// controller logic goes here
+			})
+			.factory()
+			.service();
 
 *声明配置阶段与运行阶段的语法*
 
@@ -972,19 +972,19 @@ angular支持两种不同的声明**配置代码块**（同时运行代码块也
 
 1. 作为`angular.module()`的第三个参数进行配置，这样子的配置函数只能注册一个配置块，而且由于多了第三个参数，这让整个module的声明看起来非常冗杂。
 
-	angular.module("admin-projects", [], function() {
-		// configuration logic goes here
-	})
+		angular.module("admin-projects", [], function() {
+			// configuration logic goes here
+		})
 
 2. 第二种方式是通过在返回的module实例后通过链式调用串上去多个配置块：
 
-	angular.module("admin-projects", [])
-		.config(function() {
-			// config block 1
-		})
-		.config(function() {
-			// config block 2
-		});
+		angular.module("admin-projects", [])
+			.config(function() {
+				// config block 1
+			})
+			.config(function() {
+				// config block 2
+			});
 
 ## angular-app目录组织结构
 最后，让我们来概览一下angular-app的整个项目结构吧。
@@ -1076,6 +1076,47 @@ angular支持两种不同的声明**配置代码块**（同时运行代码块也
 			package.json 							-- npm会根据这里面的列表安装开发依赖包
 
 		server 										-- 服务器端代码
+			cert 									-- 证书相关文件
+			lib 									-- 第三方类库
+				routes 								-- 页面切换
+				initDB.js 							-- 初始化MongoDB
+				mongo-proxy.js 						-- 
+				mongo-strategy.js 					-- 
+				projectJSON.js 						--
+				security.js							--
+				xsrf.js								--
+			test 									-- 测试相关
+				mongo-initdb.js 					--
+				mongo-proxy.js 						--
+				mongo-strategy.js 					--
+				security.js 						--
+			node_modules 							-- npm安装后出现的文件夹
+				express 							-- 
+				grunt 								--
+				passport 							--
+				open 								--
+				rewire 								--
+			config.js 								--
+			gruntFile.js 							--
+			initDB.js 								--
+			package.json 							--
+			server.js 								--
+
+		LICENSE 									-- MIT认证
+		README.md 									-- 项目指南
 
 
 ## 自动化单元测试
+前面讲了一堆废话，总结起来就是：我们是人，不是神，会出错，要测试。而这其中自动化测试的实践在敏捷开发中尤其流行。而测试主要就讲两种：单元测试；端到端测试。
+
+单元测试是我们对付程序bug的第一道防线。它专注于小块的代码，经常是独立的模块或者对象、类等。单元测试确保我们相对底层的结构的正确性，而且我们所写的函数、代码能够产生我们预期的效果。单元测试有五个好处，但是你Y我现在还没用过，让我直翻我必然不干，所以先占个位吧，后面弄懂了再来翻（当然有可能直接给忘了）：
+
+1. 及早发现问题
+2. 能够理清代码思路
+3. 简单
+4. 测试驱动开发
+5. test可以作为文档，我们可以看到一个方法是怎么被调用的，它的参数呀之类的
+
+虽然单元测试很好，但是它不能捕获所有的问题，这时候就需要相对高一层的：端到端测试了。
+
+接下来两小节单独讲测试，目前只好先忽略跳过了。
