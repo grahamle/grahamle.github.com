@@ -28,3 +28,15 @@ tags:
 	+ 直接访问：`http://username.github.io` （username为你的github账户名）
 	+ push到 master 分支
 	+ 使用 jekyll 语法，用 markdown 书写
+
+## 项目站点
+建站步骤相对简单：
+
+	$ git clone https://github.com/USERNAME/PROJECT.git PROJECT
+	$ git checkout --orphan gh-pages
+	$ git rm -rf .
+	$ git add .
+	$ git commit -a -m "First pages commit"
+	$ git push origin gh-pages
+
+过大概十分钟之后，如果你没有配域名，那么就可以通过上面讲的方法访问了。这里面最麻烦最DT的就是如果用模版，那改模版为己所用就需要非常多的功夫了。
