@@ -9,6 +9,8 @@ tag:
 
 **书籍外文名**：*Mastering Web Application Development with AngularJS*
 
+现已迁移至：[这里](https://grahamle.github.io/webapp-ng)
+
 今天开始，我会陆续对这本书的部分章节（也许是全部）进行翻译，不包括前言等。**翻译说明**：
 
 - 对于诸如 `directives` 这样的术语不做翻译
