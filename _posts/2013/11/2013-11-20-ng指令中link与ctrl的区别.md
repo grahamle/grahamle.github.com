@@ -35,3 +35,7 @@ tag:
 
 - 控制器可以暴露一个API，而link可以通过require与其他的指令控制器交互
 - 所以如果要开放出一个API给其他指令用就写在controller中，否则写在link中
+
+## 执行先后问题
+
+首先，看下面一个很有趣的示例：[log-compile指令](http://plnkr.co/edit/CW7cF0?p=preview)，通过这个 plnkr ，我们可以知道，**子级指令的所有 link function ：包括 pre 和 post 两个link都会在父级的post link之前被执行**，我们通常所说的link function，其实*是 post link 的快捷方式罢了*。所以，像下面这个例子中，这样用，是会有问题的：[说明 link 在 ctrl 之后执行的一个例子](http://plnkr.co/edit/SHOe0O?p=preview)，上面这个例子非常给力，值得学习。
